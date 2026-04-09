@@ -1,0 +1,28 @@
+# TS compilados
+*.js.map
+*.d.ts
+*.d.ts.map
+tsconfig.json
+
+
+# node_modules
+node_modules/
+package-lock.json
+package.json
+
+# Ambiente
+venv/
+.env
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
