@@ -63,6 +63,7 @@ body {
     display: flex;
     font-family: font-relogio, monospace;
     background: rgba(255, 0, 0, 0.5);
+    flex-direction: column;
 }
 
 .cloack {
@@ -70,13 +71,14 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     display: flex;
     gap: 0.5rem;
+    transform: translateX(20px);
 }
 
 .data {
     font-size: 1.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    margin-top: 100px;
     display: flex;
+    transform: translateX(55px);
 }
 
 .right-cima {
