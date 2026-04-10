@@ -15,8 +15,17 @@
     </div>
     <div class="container-cima">
         <div class="left-cima">
-            <div id="relogio">⏰ Carregando...</div>
-            <script src="relogio.js"></script>
+            <div class="cloack">
+                <span id="horas">00</span>
+                <span>:</span>
+                <span id="minutos">00</span>
+            </div>
+            <div class="data">
+                <span id="day">00</span>
+                <span>/</span>
+                <span id="month">00</span>
+                <span>/</span>
+                <span id="year">0000</span>
         </div>
         <div class="right-cima">
             <div class="task-list">
@@ -25,9 +34,13 @@
                     <button onclick="addQuest()">Adicionar Tarefa</button>
                 </div>
                 <ul id="listaTarefa"></ul>
-                <script src="task.js"></script>
             </div>
         </div>
     </div>
+    
+    <!--Scripts-->
+    <script type="module" src="relogio.js"></script>
+    <script type="module" src="task.js"></script>
+
 </body>
 </html>

@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 ;
 let tarefas = [];
 let proximoId = 1;
@@ -8,4 +6,5 @@ const listaTask = document.getElementById("listaTarefa");
 function addTask() {
     const texto = novaTaskInput.value.trim();
 }
+export {};
 //# sourceMappingURL=task.js.map
