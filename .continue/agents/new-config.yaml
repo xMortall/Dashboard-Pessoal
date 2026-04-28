@@ -1,0 +1,20 @@
+# This is an example configuration file
+# To learn more, see the full config.yaml reference: https://docs.continue.dev/reference
+
+name: Example Config
+version: 1.0.0
+schema: v1
+
+# Define which models can be used
+# https://docs.continue.dev/customization/models
+models:
+  - title: "DeepSeek V3"
+    provider: "deepseek"
+    model: "deepseek-chat"
+    apiKey: "sk-ddb9f76a59aa45fdb26b00b9504c4bb2"
+
+tabAutocompleteModel:
+  title: "DeepSeek Coder"
+  provider: "deepseek"
+  model: "deepseek-coder"
+  apiKey: "sk-ddb9f76a59aa45fdb26b00b9504c4bb2"
