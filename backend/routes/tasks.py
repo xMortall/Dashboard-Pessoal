@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 import mysql.connector as mysqlConnector
 import os
 
-load_dotenv(".env")
+load_dotenv("../.env")
 
 tasks_bp = Blueprint("tasks", __name__)
 
@@ -132,3 +132,42 @@ def listar_tasks():
 
     except Exception:
         return jsonify({"erro": "Ocorreu um erro ao listar as tasks"}), 500
+    
+@tasks_bp.route("/api/tasks/<int:task_id>", methods=["PUT"])
+def update_task(task_id):
+    data = request.get_json()
+
+    completed = data.get("completed")
+
+    conn = get_db_connection()
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE tasks SET completed = %s WHERE id = %s",
+            (completed, task_id)
+        )
+        conn.commit()
+
+        return jsonify({"message": "Task atualizada"}), 200
+
+    finally:
+        conn.close()
+
+@tasks_bp.route("/api/tasks/<int:task_id>", methods=["DELETE"])
+def delete_task(task_id):
+
+    conn = get_db_connection()
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM tasks WHERE id = %s",
+            (task_id,)
+        )
+        conn.commit()
+
+        return jsonify({"message": "Task deletada"}), 200
+
+    finally:
+        conn.close()

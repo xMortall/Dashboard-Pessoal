@@ -15,24 +15,26 @@
     </div>
     <div class="container-cima">
         <div class="left-cima">
+            <div class="horas-data">
             <div class="cloack">
-                <span id="horas">00</span>
-                <span>:</span>
-                <span id="minutos">00</span>
-            </div>
-            <div class="data">
-                <span id="day">00</span>
-                <span>/</span>
-                <span id="month">00</span>
-                <span>/</span>
-                <span id="year">0000</span>
+                    <span id="horas">00</span>
+                    <span>:</span>
+                    <span id="minutos">00</span>
+                </div>
+                <div class="data">
+                    <span id="day">00</span>
+                    <span>/</span>
+                    <span id="month">00</span>
+                    <span>/</span>
+                    <span id="year">0000</span>
+                </div>
             </div>
         </div>
         <div class="right-cima">
             <div class="task-list">
                 <div class="task-input">
-                    <input type="text" id="novaTarefa" placeholder="Digite sua tarefa">
-                    <button onclick="addTask()">Adicionar Tarefa</button>
+                    <input maxlength="44" type="text" id="novaTarefa" placeholder="Digite sua tarefa">
+                    <button class="addTask"onclick="addTask()">Adicionar Tarefa</button>
                 </div>
                 <ul id="listaTarefa"></ul>
             </div>

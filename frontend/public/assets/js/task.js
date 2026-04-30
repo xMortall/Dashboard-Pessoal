@@ -16,7 +16,7 @@ let listTask = document.getElementById("listaTarefa");
 async function addTask(){
     const _taskText = taskInput.value.trim();
 
-    if(!taskInput){return;}
+    if(!_taskText){return;}
 
     const _task = {
         name: _taskText,
@@ -24,7 +24,7 @@ async function addTask(){
     }
 
     try{
-        resposta = await fetch("http://127.0.0.1:6767/api/tasks",{
+        const resposta = await fetch("http://127.0.0.1:6767/api/tasks",{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -32,7 +32,7 @@ async function addTask(){
             body: JSON.stringify(_task),
         });
         if (!resposta.ok){
-            const erro = await reposta.text();
+            const erro = await resposta.text();
             console.log("Erro:", erro)
             return;
         }
@@ -53,36 +53,78 @@ async function addTask(){
 function createTaskItem(task){
     const _taskItem = document.createElement("li");
     _taskItem.className = "task-item";
-    _taskItem.innerHTML = `<input type="checkbox" class="checkbox"> <span>${task.name}</span>
-                            <button onclick="removeTask(this.parentNode)" class="remove-task">X</button>`;
+    _taskItem.innerHTML = `<input type="checkbox" ${task.completed ? "checked" : ""} id="${task.id}" class="checkbox"> <span>${task.name}</span>
+                            <button type="remove-task" class="remove-task">X</button>`;
+    
+    const checkbox = _taskItem.querySelector(".checkbox");
+    const removeButton = _taskItem.querySelector(".remove-task");
+
+    removeButton.addEventListener("click", () => {
+        removeTask(task.id, _taskItem);
+    });
+
+    checkbox.addEventListener("change", () => {
+        updateTask(task.id, checkbox.checked ? 1 : 0);
+    });
+    
     listTask.appendChild(_taskItem);
     return _taskItem;
 }
 
-function removeTask(task){
-    listTask.removeChild(task);
+async function updateTask(id, completed){
+    try{
+        const resposta = await fetch(`http://127.0.0.1:6767/api/tasks/${id}`,{
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({completed: completed})
+        });
+    }catch(error){
+        console.log(error);
+    }
+}
+
+async function removeTask(id, task){
+
+    try{
+        const resposta = await fetch(`http://127.0.0.1:6767/api/tasks/${id}`,{
+            method: "DELETE"
+        });
+
+        if (!resposta.ok){
+            const erro = await resposta.text();
+            console.log("Erro:", erro)
+            return;
+        }
+        listTask.removeChild(task);
+        
+
+    }catch(error){
+        console.log(error);
+    }
+
 }
 
 async function get_task_db(){
     try{
         resposta = await fetch("http://127.0.0.1:6767/api/tasks",{
-            method: "GET",
-            headers:{
-                "Content-Type": "application/json"
-            }
+            method: "GET"
         });
+        
+        const data = await resposta.json();
+        
         if (resposta.ok){
-            const data = await resposta.json();
-            for (let i = 0; i < data.length; i++){
-                const _task = {
-                    name: data[i].name,
-                    completed: data[i].completed
-                }
-                tasks.push(_task);
+            data.data.forEach(_task => {
+                _task.completed = Boolean(_task.completed);
                 createTaskItem(_task);
-            }
-        }
-        }catch (error){
-            console.log(error);
-        }
+            });
+        };
+
+
+    }catch (error){
+        console.log(error);
+    }
 }
+
+get_task_db();
