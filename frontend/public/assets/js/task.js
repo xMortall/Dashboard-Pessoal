@@ -13,19 +13,41 @@ let tasks = [];
 let taskInput = document.getElementById("novaTarefa");
 let listTask = document.getElementById("listaTarefa");
 
-function addTask(){
+async function addTask(){
     const _taskText = taskInput.value.trim();
 
     if(!taskInput){return;}
-    if(!_taskText){return;}
 
     const _task = {
         name: _taskText,
         completed: false
     }
-    tasks.push(_task);
-    createTaskItem(_task);
-    taskInput.value = "";
+
+    try{
+        resposta = await fetch("http://127.0.0.1:6767/api/tasks",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(_task),
+        });
+        if (!resposta.ok){
+            const erro = await reposta.text();
+            console.log("Erro:", erro)
+            return;
+        }
+        const data = await resposta.json();
+
+        _task.id = data.data.id;
+        
+        tasks.push(_task);
+        createTaskItem(_task);
+        taskInput.value = "";
+
+    }catch(error){
+        console.log(error);
+    }
+
 };
 
 function createTaskItem(task){
@@ -41,3 +63,26 @@ function removeTask(task){
     listTask.removeChild(task);
 }
 
+async function get_task_db(){
+    try{
+        resposta = await fetch("http://127.0.0.1:6767/api/tasks",{
+            method: "GET",
+            headers:{
+                "Content-Type": "application/json"
+            }
+        });
+        if (resposta.ok){
+            const data = await resposta.json();
+            for (let i = 0; i < data.length; i++){
+                const _task = {
+                    name: data[i].name,
+                    completed: data[i].completed
+                }
+                tasks.push(_task);
+                createTaskItem(_task);
+            }
+        }
+        }catch (error){
+            console.log(error);
+        }
+}
