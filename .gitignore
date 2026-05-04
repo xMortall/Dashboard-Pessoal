@@ -6,6 +6,7 @@ venv/
 # IDE
 .vscode/
 .idea/
+src/
 
 # Sistema
 .DS_Store
