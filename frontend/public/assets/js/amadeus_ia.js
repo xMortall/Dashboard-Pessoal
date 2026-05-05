@@ -58,9 +58,48 @@ function responderIaHTML(_pergunta, _resposta) {
 }
 
 function normalizarTexto(_texto){
-    const _texto_formatado = _texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const _textoFormatado = _texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/,/g,"")
+    .replace(/(.)\1+/g, "$1")
+    .toLowerCase()
+    .trim();
+    
+    return _textoFormatado;
+}
+function obterPalavras (_texto){
+    const _textoNormalizado = normalizarTexto(_texto);
+    return _textoNormalizado.split(" ")
+}
 
-    return _texto_formatado
+function identificarIntencao(_texto){
+    
+    const _palavras = obterPalavras(_texto);
+
+    let _grupos = {
+        saudacao: ["ola", "oi","boas"],
+        quantidade: ["quantas", "quantos", "listar", "mostrar"],
+        tarefas: ["tarefas", "tarefa", "trabalho", "trabalhos", "atividades"],
+        eliminar: ["excluir", "deletar", "remover", "apagar"],
+        adicao: ["adicionar", "criar", "criar", "nova", "novo"]
+    }
+
+
+    const _temPalavra = (grupo) => {
+        return _grupos[grupo].some(p => _palavras.includes(p));
+    };
+
+    if (_temPalavra("saudacao")){
+        return "saudacao"
+    }else if (_temPalavra("quantidade") && _temPalavra("tarefas")){
+        return "quantas_tarefas"
+    }else if (_temPalavra("eliminar") && _temPalavra("tarefas")){
+        return "eliminar_tarefa"
+    }else if (_temPalavra("adicao") && _temPalavra("tarefas")){
+        return "adicionar_tarefa"
+    }
+    return "sem_intencao"
 }
 
 function responderSaudacao(){
@@ -69,31 +108,43 @@ function responderSaudacao(){
 }
 
 function responderQuantidadeTarefas(_dados){
-    let _resposta = "Você tem " + _dados + " tarefas"
-    return _resposta
+    if (_dados == 0){
+        return "Sem tarefas."
+    }else if(_dados == 1){
+        return "Uma tarefa."
+    }else{
+        return "Quantidade de tarefas: " + _dados;
+    }
 }
 
-function respostaIa(){
+function respostaIa(_pergunta){
 
     let _resposta = '';
-    _texto = normalizarTexto(pergunta.value);
 
-    let dados = {
+    const _dados = {
         tarefas: document.querySelectorAll(".task-item"),
-    };
-
-    if (_texto.includes("ola") || _texto.includes("oi") ){
-        _resposta = responderSaudacao();
-    }else if (_texto.includes("quantas")){
-        _resposta = responderQuantidadeTarefas(dados.tarefas.length);
-    }else{
-        _resposta = "Nao entendi"
     }
+
+    let _intencao = identificarIntencao(_pergunta);
+
+    if (_intencao == "saudacao"){
+        _resposta = responderSaudacao();
+    }else if (_intencao == "quantas_tarefas"){
+        _resposta = responderQuantidadeTarefas(_dados.tarefas.length);
+    }else if (_intencao == "eliminar_tarefa"){
+        _resposta = "Qual tarefa quer eliminar?"
+    }else if (_intencao == "adicionar_tarefa"){
+        _resposta = "Qual tarefa quer adicionar?"
+    }
+    else {
+        _resposta = "Sem resposta para essa pergunta."
+    }
+    
     return _resposta
 }
 
 
 submitPergunta.addEventListener("click", function() {
-    let resposta = respostaIa();
+    let resposta = respostaIa(pergunta.value);
     responderIaHTML(pergunta, resposta);
 });
