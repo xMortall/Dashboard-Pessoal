@@ -17,14 +17,13 @@ frase_bp = Blueprint("frase", __name__)
 url = "https://fnaf-api.gsarvente.workers.dev/quotes/random"
 
 def pegar_frase():
-    _id_remove = {1, 3, 36, 37,38}
     _control_while:bool = True
     while _control_while:
         try:
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
-                if data["id"] in _id_remove:
+                if len(data["quote"]) > 60:
                     continue
                 else:
                     frase = data["quote"] + " - " + data["said"]

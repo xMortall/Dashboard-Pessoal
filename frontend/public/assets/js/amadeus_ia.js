@@ -12,6 +12,14 @@ const pergunta = document.querySelector(".pergunta");
 const submitPergunta = document.querySelector(".submitPergunta");
 const historico = document.querySelector("#historico");
 
+let intencao = ""
+let estadoConversa = "Normal";
+
+// Memotirização do estadoConversa das tarefas
+let dados = {
+    quantidadeTarefas: () => document.querySelectorAll(".task-item").length
+}
+
 let count = 0;
 function responderIaHTML(_pergunta, _resposta) {
 
@@ -76,6 +84,7 @@ function obterPalavras (_texto){
 function identificarIntencao(_texto){
     
     const _palavras = obterPalavras(_texto);
+    intencao = "";
 
     let _grupos = {
         saudacao: ["ola", "oi","boas"],
@@ -90,16 +99,31 @@ function identificarIntencao(_texto){
         return _grupos[grupo].some(p => _palavras.includes(p));
     };
 
-    if (_temPalavra("saudacao")){
-        return "saudacao"
-    }else if (_temPalavra("quantidade") && _temPalavra("tarefas")){
-        return "quantas_tarefas"
-    }else if (_temPalavra("eliminar") && _temPalavra("tarefas")){
-        return "eliminar_tarefa"
-    }else if (_temPalavra("adicao") && _temPalavra("tarefas")){
-        return "adicionar_tarefa"
+    if (estadoConversa == "precisa_detalhes_quantidade"){
+        if(_temPalavra("tarefas")){
+            intencao = "QuantidadeTarefas";
+            estadoConversa = "Normal";
+            return;
+        }
     }
-    return "sem_intencao"
+    
+    else if(estadoConversa == "Normal"){
+        if(_temPalavra("saudacao")){
+            intencao = "Saudacao";
+            return;
+        }else if(_temPalavra("quantidade") && !_temPalavra("tarefas")){
+            intencao = "PrecisaDetalhesQuantidade";
+            estadoConversa = "precisa_detalhes_quantidade";
+            return;
+        }else if(_temPalavra("quantidade") && _temPalavra("tarefas")){
+            intencao = "QuantidadeTarefas";
+            estadoConversa = "Normal";
+            return;
+        }else{
+            return;
+        }
+    }
+ 
 }
 
 function responderSaudacao(){
@@ -107,7 +131,8 @@ function responderSaudacao(){
     return _resposta
 }
 
-function responderQuantidadeTarefas(_dados){
+function responderQuantidadeTarefas(){
+    let _dados = dados.quantidadeTarefas();
     if (_dados == 0){
         return "Sem tarefas."
     }else if(_dados == 1){
@@ -117,30 +142,24 @@ function responderQuantidadeTarefas(_dados){
     }
 }
 
+function responderPrecisaDetalhesQuantidade(_dados){
+    let _resposta = "Precisa saber a quatidade todal de que?"
+    return _resposta
+}
+
 function respostaIa(_pergunta){
 
-    let _resposta = '';
+    identificarIntencao(_pergunta);
 
-    const _dados = {
-        tarefas: document.querySelectorAll(".task-item"),
-    }
-
-    let _intencao = identificarIntencao(_pergunta);
-
-    if (_intencao == "saudacao"){
-        _resposta = responderSaudacao();
-    }else if (_intencao == "quantas_tarefas"){
-        _resposta = responderQuantidadeTarefas(_dados.tarefas.length);
-    }else if (_intencao == "eliminar_tarefa"){
-        _resposta = "Qual tarefa quer eliminar?"
-    }else if (_intencao == "adicionar_tarefa"){
-        _resposta = "Qual tarefa quer adicionar?"
-    }
-    else {
-        _resposta = "Sem resposta para essa pergunta."
+    if (intencao){
+        let nomeDaFuncao = "responder" + intencao;
+        if (typeof window[nomeDaFuncao] === "function"){
+            let _resposta = window[nomeDaFuncao]();
+            return _resposta;
+        }
     }
     
-    return _resposta
+    return "Não entendi. Tente novamente."
 }
 
 
